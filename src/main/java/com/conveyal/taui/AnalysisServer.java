@@ -36,6 +36,7 @@ import java.util.Map;
 import static spark.Spark.before;
 import static spark.Spark.exception;
 import static spark.Spark.get;
+import static spark.Spark.options;
 import static spark.Spark.port;
 
 /**
@@ -67,6 +68,22 @@ public class AnalysisServer {
         // http://stackoverflow.com/questions/20789546
         ImageIO.scanForPlugins();
 
+        // Allow CORS in offline mode
+        if (AnalysisServerConfig.offline) {
+            options("/*", (request, response) -> {
+                String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+                if (accessControlRequestHeaders != null) {
+                    response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+                }
+
+                String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+                if (accessControlRequestMethod != null) {
+                    response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+                }
+                return "OK";
+            });
+        }
+
         // Before handling each request, check if the user is authenticated.
         before((req, res) -> {
             // Don't require authentication to view the main page, or for internal API endpoints contacted by workers.
@@ -80,6 +97,8 @@ public class AnalysisServer {
                 // hardwire group name if we're working offline
                 req.attribute("accessGroup", "OFFLINE");
                 req.attribute("email", "analysis@conveyal.com");
+
+                res.header("Access-Control-Allow-Origin", "*");
             } else {
                 handleAuthentication(req, res);
             }
