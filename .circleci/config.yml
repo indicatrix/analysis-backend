@@ -52,5 +52,4 @@ jobs:
       - run:
           name: copy to s3
           command: |
-            export FILE=target/analyst.jar
-            aws s3 cp $FILE s3://indicatrix-analysis-backend-builds/$FILE
+            aws s3 cp ./target/analyst.jar s3://indicatrix-analysis-backend-builds/analyst.jar
