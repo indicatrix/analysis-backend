@@ -2,7 +2,9 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
+version: 2.1
+orbs:
+  aws-s3: circleci/aws-s3@1.0.0
 jobs:
   build:
     docker:
@@ -37,3 +39,7 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      - aws-s3/copy:
+          from: target/analyst.jar
+          to: 's3://indicatrix-analysis-backend-builds'
