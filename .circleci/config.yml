@@ -40,6 +40,12 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
+      - run:
+          name: Install dependencies
+          working_directory: /
+          command: |
+            apt-get -y -qq install awscli
+
       - aws-s3/copy:
           from: target/analyst.jar
           to: 's3://indicatrix-analysis-backend-builds'
