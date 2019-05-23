@@ -49,6 +49,8 @@ jobs:
             sudo apt-get install -y python python-pip
             sudo pip install awscli
 
-      - aws-s3/copy:
-          from: target/analyst.jar
-          to: 's3://indicatrix-analysis-backend-builds'
+      - run:
+          name: copy to s3
+          command: |
+            export FILE=target/analyst.jar
+            aws s3 cp $FILE s3://indicatrix-analysis-backend-builds/$FILE
